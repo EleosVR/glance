@@ -29,9 +29,13 @@ sudo chmod u+x ./discord.sh
 ```
 3. [Create a webhook][webhook] in a text channel of your Discord server
 4. Edit the settings.conf file and set your `DASHBOARD_URL` and `DISCORD_WEBHOOK` values. This is also where you can customize what you see in Discord (use `true` or `false`. Save the file when you are done
-`nano ./settings.conf`
+```
+nano ./settings.conf
+```
 5. Execute the run.sh file from the glance directory
-`./run.sh`
+```
+./run.sh
+```
 
 Make sure there are no errors in the terminal and everything looks good on Discord. The script takes about 5 seconds or less to run
 
