@@ -13,6 +13,9 @@ data_file="$(dirname "$0")/data.json"
 
 if [ ! -f "$discord_file" ]; then
 	printf "${RED}Error: discord.sh does not exist${NC}\n" >&2
+<<<<<<< HEAD
+	exit 1
+=======
 	printf "${GREEN}Downloading discord.sh from GitHub...${NC}\n" >&2
 	
 	if ! curl -o "$discord_file" -L https://raw.githubusercontent.com/fieu/discord.sh/master/discord.sh; then
@@ -22,6 +25,7 @@ if [ ! -f "$discord_file" ]; then
 	
 	printf "${GREEN}Setting executable permission for discord.sh${NC}\n" >&2
 	sudo chmod u+x "$discord_file" # set executable permission for discord.sh
+>>>>>>> origin/main
 fi
 if [ ! -f "$settings_file" ]; then
 	printf "${RED}Error: settings.conf does not exist${NC}\n" >&2
