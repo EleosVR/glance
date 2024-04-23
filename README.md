@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Glance
 
 This is a small and simple linux shell script to send various details about your Storj node to Discord. There are settings that you can customize to choose what you see. Currently only made for 1 node.
@@ -57,6 +56,3 @@ crontab -e
 [discord]: https://github.com/fieu/discord.sh
 [webhook]: https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks
 [crontab]: https://crontab.guru/every-1-hour
-=======
-# glance
->>>>>>> origin/main
