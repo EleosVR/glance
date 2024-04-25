@@ -13,19 +13,7 @@ data_file="$(dirname "$0")/data.json"
 
 if [ ! -f "$discord_file" ]; then
 	printf "${RED}Error: discord.sh does not exist${NC}\n" >&2
-<<<<<<< HEAD
 	exit 1
-=======
-	printf "${GREEN}Downloading discord.sh from GitHub...${NC}\n" >&2
-	
-	if ! curl -o "$discord_file" -L https://raw.githubusercontent.com/fieu/discord.sh/master/discord.sh; then
-		printf "${RED}Failed to download discord.sh from GitHub${NC}\n" >&2
-		exit 1
-	fi
-	
-	printf "${GREEN}Setting executable permission for discord.sh${NC}\n" >&2
-	sudo chmod u+x "$discord_file" # set executable permission for discord.sh
->>>>>>> origin/main
 fi
 if [ ! -f "$settings_file" ]; then
 	printf "${RED}Error: settings.conf does not exist${NC}\n" >&2
@@ -394,15 +382,15 @@ fi
 
 if [ "$SHOW_SAT_SCORES" = true ]; then
 	for row in $(echo "${satellite_audits}" | jq -c '.[]'); do
-		satellite_name=$(echo "${row}" | jq -r '.satelliteName')
+		satellite_name=$(echo "${row}" | jq -r '.satelliteName' | cut -d'.' -f1)
 		suspension_score=$(echo "${row}" | jq -r '.suspensionScore * 100' | awk '{if ($0 == int($0)) printf "%.0f", $0; else printf "%.2f", $0}')
 		audit_score=$(echo "${row}" | jq -r '.auditScore * 100' | awk '{if ($0 == int($0)) printf "%.0f", $0; else printf "%.2f", $0}')
 		online_score=$(echo "${row}" | jq -r '.onlineScore * 100' | awk '{if ($0 == int($0)) printf "%.0f", $0; else printf "%.2f", $0}')
 
 		if [ "$SHORT_SAT_SCORES" = true ]; then
-			push_description+="[$satellite_name] - S: $suspension_score%, A: $audit_score%, O: $online_score%\n"
+			push_description+="$satellite_name - S: $suspension_score%, A: $audit_score%, O: $online_score%\n"
 		else
-			push_description+="[$satellite_name] - Suspension: $suspension_score%, Audit: $audit_score%, Online: $online_score%\n"
+			push_description+="$satellite_name - Suspension: $suspension_score%, Audit: $audit_score%, Online: $online_score%\n"
 		fi
 	done
 fi
