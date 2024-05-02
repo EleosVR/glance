@@ -37,7 +37,7 @@ nano ./settings.conf
 ./run.sh
 ```
 
-Make sure there are no errors in the terminal and everything looks good on Discord. The script takes about 2 seconds or more to run. I've seen as long as 6 minutes with a very busy node. You can see an example below
+Make sure there are no errors in the terminal and everything looks good on Discord. The script takes about 2 seconds to run but this may depend on your setup. You can see an example below
 ![example output](/images/discord-output.jpg)
 
 ## Automation
