@@ -204,7 +204,7 @@ satellite_audits=$(jq -r '.audits' <<< "$request_3")
 ## JSON ##
 # check if the data file does not exist
 if [ ! -f "$data_file" ]; then
-	echo "{\"bandwidthSummary\": $bandwidth, \"previousUsedSpace\": $used, \"previousTrash\": $trash, \"resetTimestamp\": $(date +%s)}" > "$data_file"
+	echo "{\"bandwidthSummary\": $bandwidth, \"resetTimestamp\": $(date +%s)}" > "$data_file"
 fi
 
 # check if a new month has NOT started (bandwidthSummary was NOT reset)
@@ -216,19 +216,11 @@ fi
 if [ "$bandwidth" -lt "$(jq '.bandwidthSummary' "$data_file")" ]; then
 	jq -c --argjson newBandwidthSummary "$bandwidth" --argjson newUsed "$used" --argjson newTrash "$trash" --argjson newResetTimestamp "$(date +%s)" \
 	'.bandwidthSummary = $newBandwidthSummary |
-	.previousUsedSpace = $newUsed |
-	.previousTrash = $newTrash |
 	.resetTimestamp = $newResetTimestamp' \
     "$data_file" > tmpfile && mv tmpfile "$data_file"
 fi
 
 reset_timestamp="$(jq '.resetTimestamp' "$data_file")"
-previous_used="$(jq '.previousUsedSpace' "$data_file")"
-previous_trash="$(jq '.previousTrash' "$data_file")"
-
-initial_used_space=$(("$previous_used" + "$previous_trash"))
-current_total_used_space=$(("$used" + "$trash"))
-data_difference=$(("$current_total_used_space" - "$initial_used_space"))
 
 ## SETTINGS ##
 push_description=""
@@ -413,11 +405,7 @@ if [ "$SHOW_NODE_AGE" = true ]; then
 fi
 
 if [ "$SHOW_FILL_TIME" = true ]; then
-	if [ "$(($used - $previous_used))" -ne 0 ]; then
-		push_footer+="- Estimated Time Until Full: $(convert_timestamp "$(get_estimated_time "$used" "$available" "$data_difference" "$reset_timestamp")" false)"
-	else
-		push_footer+="- Estimated Time Until Full: ∞"
-	fi
+	push_footer+="- Estimated Time Until Full: $(convert_timestamp "$(get_estimated_time "$used" "$available" "$ingress" "$reset_timestamp")" false)"
 fi
 
 ## DISCORD ##
