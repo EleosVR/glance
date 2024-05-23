@@ -181,7 +181,10 @@ request_2=$(api_call "$DASHBOARD_URL/api/sno/estimated-payout/")
 request_3=$(api_call "$DASHBOARD_URL/api/sno/satellites/")
 
 ## VARIABLES ##
+contract_address="0xA0806DA7835a4E63dB2CE44A2b622eF8b73B5DB5"
+
 nodeID=$(jq -r '.nodeID' <<< "$request_1")
+wallet_address=$(jq -r '.wallet' <<< "$request_1")
 used=$(jq -r '.diskSpace.used' <<< "$request_1")
 available=$(jq -r '.diskSpace.available' <<< "$request_1")
 trash=$(jq -r '.diskSpace.trash' <<< "$request_1")
@@ -200,6 +203,13 @@ egress=$(jq -r '.egressSummary' <<< "$request_3")
 ingress=$(jq -r '.ingressSummary' <<< "$request_3")
 node_joined=$(jq -r '.earliestJoinedAt' <<< "$request_3")
 satellite_audits=$(jq -r '.audits' <<< "$request_3")
+
+## Storj ##
+wallet_info=$(curl -s -X 'GET' "https://block-explorer-api.mainnet.zksync.io/api?module=account&action=tokenbalance&contractaddress=$contract_address&address=$wallet_address" -H 'accept: application/json')
+balance=$(echo $wallet_info | jq -r '.result')
+storj=$(echo "scale=8; $balance / 100000000" | bc)
+price=$(curl -s "https://api.coingecko.com/api/v3/simple/price?ids=storj&vs_currencies=usd" | jq -r '.storj.usd')
+storj_value=$(printf '$%.2f' "$(echo "$storj * $price" | bc -l)")
 
 ## JSON ##
 # check if the data file does not exist
@@ -340,7 +350,7 @@ fi
 # spacing condition
 if ([ "$SHOW_NODE_PING" = true ] || [ "$SHOW_QUIC_PING" = true ] || [ "$SHOW_DISK_SPACE" = true ] || [ "$SHOW_DISK_PERCENTAGE" = true ] || \
 	[ "$SHOW_TRASH" = true ] || [ "$SHOW_TRASH_PERCENTAGE" = true ] || [ "$SHOW_OVERUSED" = true ] || [ "$SHOW_OVERUSED_PERCENTAGE" = true ] || \
-	[ "$SHOW_EGRESS" = true ] || [ "$SHOW_INGRESS" = true ]) && \
+	[ "$SHOW_EGRESS" = true ] || [ "$SHOW_INGRESS" = true ] || [ "$SHOW_BALANCE" = true ]) && \
 	([ "$SHOW_PAYOUT" = true ] || [ "$SHOW_PAYOUT_HELD" = true ]); then
 	
 	push_description+="\n\n"
@@ -361,12 +371,20 @@ if [ "$SHOW_PAYOUT" = true ] || [ "$SHOW_PAYOUT_HELD" = true ]; then
 	if [ "$SHOW_PAYOUT" = true ] && [ "$SHOW_PAYOUT_HELD" = true ]; then
 		push_description+=")"
 	fi
+	
+	# spacing condition
+	if [ "$SHOW_BALANCE" = true ]; then
+		push_description+="\n"
+	fi
+fi
+if [ "$SHOW_BALANCE" = true ]; then
+	push_description+="Storj: $storj ($storj_value)"
 fi
 
 # spacing condition
 if ([ "$SHOW_NODE_PING" = true ] || [ "$SHOW_QUIC_PING" = true ] || [ "$SHOW_DISK_SPACE" = true ] || [ "$SHOW_DISK_PERCENTAGE" = true ] || \
 	[ "$SHOW_TRASH" = true ] || [ "$SHOW_TRASH_PERCENTAGE" = true ] || [ "$SHOW_OVERUSED" = true ] || [ "$SHOW_OVERUSED_PERCENTAGE" = true ] || \
-	[ "$SHOW_EGRESS" = true ] || [ "$SHOW_INGRESS" = true ] || [ "$SHOW_PAYOUT" = true ] || [ "$SHOW_PAYOUT_HELD" = true ]) && \
+	[ "$SHOW_EGRESS" = true ] || [ "$SHOW_INGRESS" = true ] || [ "$SHOW_PAYOUT" = true ] || [ "$SHOW_PAYOUT_HELD" = true ] || [ "$SHOW_BALANCE" = true ]) && \
 	[ "$SHOW_SAT_SCORES" = true ]; then
 	
 	push_description+="\n\n"
