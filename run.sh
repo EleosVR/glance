@@ -204,7 +204,7 @@ ingress=$(jq -r '.ingressSummary' <<< "$request_3")
 node_joined=$(jq -r '.earliestJoinedAt' <<< "$request_3")
 satellite_audits=$(jq -r '.audits' <<< "$request_3")
 
-## Storj ##
+## STORJ ##
 wallet_info=$(curl -s -X 'GET' "https://block-explorer-api.mainnet.zksync.io/api?module=account&action=tokenbalance&contractaddress=$contract_address&address=$wallet_address" -H 'accept: application/json')
 balance=$(echo $wallet_info | jq -r '.result')
 storj=$(echo "scale=8; $balance / 100000000" | bc)
